@@ -19,7 +19,7 @@ class TaskSolver:
         logging.info(f"Day:{day}/part:{part}: {result}")
 
     def parse_day(self, day):
-        return f"0{day}" if day < 10 else day
+        return f"0{day}" if day < 10 else str(day)
 
     def get_solver(self, day):
         module = importlib.import_module("days_solvers")
