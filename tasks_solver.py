@@ -4,10 +4,13 @@ import logging
 
 class TasksSolver:
     def solve(self, config):
-        day, part = config.day, config.part
+        day, part = self.parse_day(config.day), config.part
         day_solver = self.get_solver(day)
         result = day_solver.solve(part)
         logging.info(f"Day:{day}/part:{part}: {result}")
+
+    def parse_day(self, day):
+        return f"0{day}" if day < 10 else day
 
     def get_solver(self, day):
         module = importlib.import_module("days_solvers")
