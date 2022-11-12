@@ -2,7 +2,7 @@ import importlib
 import logging
 
 
-class TasksSolver:
+class TaskSolver:
     def solve(self, config):
         day, part = self.parse_day(config.day), config.part
         day_solver = self.get_solver(day)
