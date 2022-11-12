@@ -1,14 +1,13 @@
 import os
 import itertools as it
+from abc import ABC, abstractmethod
 
 
-class Day1Solver:
-    def __init__(self):
-        self.day = 1
-        self.input_data = None
-
-    def get_input_filename(self):
-        return f"day_0{self.day}.txt" if self.day < 10 else f"day_{self.day}.txt"
+class DaySolver(ABC):
+    def solve(self, part):
+        self.load_input()
+        solve_impl = getattr(self, f"solve_part_{part}")
+        return solve_impl()
 
     def load_input(self):
         file_path = os.path.join("inputs", self.get_input_filename())
@@ -16,12 +15,26 @@ class Day1Solver:
             input_data = [int(val) for val in f]
         self.input_data = input_data
 
-    def solve(self, part):
-        self.load_input()
-        solve_impl = getattr(self, f"solve_part_{part}")
-        return solve_impl()
+    def get_input_filename(self):
+        return f"day_0{self.day}.txt" if self.day < 10 else f"day_{self.day}.txt"
+
+    @abstractmethod
+    def solve_part_1(self):
+        pass
+
+    @abstractmethod
+    def solve_part_2(self):
+        pass
+
+
+class Day1Solver(DaySolver):
+    def __init__(self):
+        self.day = 1
 
     def solve_part_1(self):
+        return count_increasing_elements(self.input_data)
+
+    def solve_part_2(self):
         return count_increasing_elements(self.input_data)
 
 
