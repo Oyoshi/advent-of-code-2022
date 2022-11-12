@@ -4,6 +4,15 @@ import logging
 
 class TaskSolver:
     def solve(self, config):
+        if config.benchmark:
+            self.solve_benchmark()
+        else:
+            self.solve_day(config)
+
+    def solve_benchmark(self):
+        pass
+
+    def solve_day(self, config):
         day, part = self.parse_day(config.day), config.part
         day_solver = self.get_solver(day)
         result = day_solver.solve(part)

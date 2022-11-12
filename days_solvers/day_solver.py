@@ -4,7 +4,7 @@ import os
 
 class DaySolver(ABC):
     def solve(self, part):
-        self.load_input()
+        self.input_data = self.load_input()
         solve_impl = getattr(self, f"solve_part_{part}")
         return solve_impl()
 
@@ -12,7 +12,7 @@ class DaySolver(ABC):
         file_path = os.path.join("inputs", self.get_input_filename())
         with open(file_path) as f:
             input_data = [int(val) for val in f]
-        self.input_data = input_data
+        return input_data
 
     def get_input_filename(self):
         return f"day_{self.day}.txt"
