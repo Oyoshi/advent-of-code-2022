@@ -18,6 +18,10 @@ options:
   -p [1-2], --part [1-2]   part of the AoC day
   -b, --benchmark          compute benchmarks
 ```
-Benchmark time will be measured for all solutions (single run, sorry :trollface:). 
+Times for the benchmark will be measured for all solutions (single run, sorry). Input data can be found in `./inputs` folder :trollface:.
 
 There are also Unit Tests which cover basic scenarios described in the task example part. Each commit triggers GA pipeline and run all UTs.
+
+### Benchmark
+
+TODO
