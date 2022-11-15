@@ -8,4 +8,4 @@ def load_input_mock():
 def test_solve_part_1():
     solver = Day01Solver()
     solver.load_input = load_input_mock
-    assert solver.solve(1) == 7
+    assert solver.solve(part=1)["val"] == 7

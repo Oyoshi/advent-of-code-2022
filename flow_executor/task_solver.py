@@ -1,5 +1,6 @@
 import importlib
 import logging
+from .args_parser import AOC_DAYS
 
 
 class TaskSolver:
@@ -10,13 +11,27 @@ class TaskSolver:
             self.solve_day(config)
 
     def solve_benchmark(self):
-        pass
+        solvers = [
+            self.get_solver(day)
+            for day in [self.parse_day(day) for day in range(1, AOC_DAYS + 1)]
+        ]
+        results = [
+            {
+                "part1": solver.solve(part=1, benchmark=True),
+                "part2": solver.solve(part=2, benchmark=True),
+            }
+            for solver in solvers
+        ]
+        for idx, res in enumerate(results):
+            logging.info(
+                f"Day:{self.parse_day(idx + 1)}/Part:1:{res['part1']['time']}/Part:2:{res['part2']['time']}"
+            )
 
     def solve_day(self, config):
         day, part = self.parse_day(config.day), config.part
         day_solver = self.get_solver(day)
         result = day_solver.solve(part)
-        logging.info(f"Day:{day}/part:{part}: {result}")
+        logging.info(f"Day:{day}/Part:{part}: {result['val']}")
 
     def parse_day(self, day):
         return f"0{day}" if day < 10 else str(day)

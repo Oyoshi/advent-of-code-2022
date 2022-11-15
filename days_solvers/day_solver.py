@@ -1,12 +1,19 @@
 from abc import ABC, abstractmethod
 import os
+import time
 
 
 class DaySolver(ABC):
-    def solve(self, part):
+    def solve(self, part, benchmark=False):
         self.input_data = self.load_input()
         solve_impl = getattr(self, f"solve_part_{part}")
-        return solve_impl()
+        if benchmark:
+            start = time.process_time()
+        res = solve_impl()
+        if benchmark:
+            end = time.process_time()
+            return {"time": end - start, "val": res}
+        return {"time": None, "val": res}
 
     def load_input(self):
         file_path = os.path.join("inputs", self.get_input_filename())
