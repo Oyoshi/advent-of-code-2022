@@ -19,12 +19,10 @@ class Day01Solver(DaySolver):
                 else:
                     input_data.append(elf_carries)
                     elf_carries = []
-        return input_data
+        return [ft.reduce(lambda a, b: a + b, list_item) for list_item in input_data]
 
     def solve_part_1(self):
-        return max(
-            [ft.reduce(lambda a, b: a + b, list_item) for list_item in self.input_data]
-        )
+        return sorted(self.input_data)[-1:]
 
     def solve_part_2(self):
-        pass
+        return ft.reduce(lambda a, b: a + b, sorted(self.input_data)[-3:])
