@@ -1,1 +1,1 @@
-from .day_01_solver import Day01Solver
+from .day_01 import Day01Solver

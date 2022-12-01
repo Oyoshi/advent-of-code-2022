@@ -1,6 +1,6 @@
 import functools as ft
 import os
-from .day_solver import DaySolver
+from ..day_solver import DaySolver
 
 
 class Day01Solver(DaySolver):
