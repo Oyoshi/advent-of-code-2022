@@ -1,4 +1,5 @@
-import itertools as it
+import functools as ft
+import os
 from .day_solver import DaySolver
 
 
@@ -6,13 +7,24 @@ class Day01Solver(DaySolver):
     def __init__(self):
         self.day = "01"
 
+    # override default implementation
+    def load_input(self):
+        file_path = os.path.join("inputs", self.get_input_filename())
+        input_data = []
+        with open(file_path) as f:
+            elf_carries = []
+            for val in f:
+                if val.rstrip().isdigit():
+                    elf_carries.append(int(val))
+                else:
+                    input_data.append(elf_carries)
+                    elf_carries = []
+        return input_data
+
     def solve_part_1(self):
-        return count_increasing_elements(self.input_data)
+        return max(
+            [ft.reduce(lambda a, b: a + b, list_item) for list_item in self.input_data]
+        )
 
     def solve_part_2(self):
-        return count_increasing_elements(self.input_data)
-
-
-def count_increasing_elements(iterable_input):
-    pairs = [y - x for (x, y) in it.pairwise(iterable_input)]
-    return len(list(filter(lambda elem: elem > 0, pairs)))
+        pass
