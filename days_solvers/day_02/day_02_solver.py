@@ -1,5 +1,4 @@
 import functools as ft
-import os
 from ..day_solver import DaySolver
 
 
@@ -7,12 +6,8 @@ class Day02Solver(DaySolver):
     def __init__(self):
         self.day = "02"
 
-    # override default implementation
-    def load_input(self):
-        file_path = os.path.join("inputs", self.get_input_filename())
-        with open(file_path) as f:
-            input_data = [line.split() for line in f]
-        return input_data
+    def load_input_impl(self, file):
+        return [line.split() for line in file]
 
     def solve_part_1(self):
         return ft.reduce(

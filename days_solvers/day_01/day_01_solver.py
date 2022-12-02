@@ -1,5 +1,4 @@
 import functools as ft
-import os
 from ..day_solver import DaySolver
 
 
@@ -7,18 +6,15 @@ class Day01Solver(DaySolver):
     def __init__(self):
         self.day = "01"
 
-    # override default implementation
-    def load_input(self):
-        file_path = os.path.join("inputs", self.get_input_filename())
+    def load_input_impl(self, file):
         input_data = []
-        with open(file_path) as f:
-            calories = []
-            for val in f:
-                if val.rstrip().isdigit():
-                    calories.append(int(val))
-                else:
-                    input_data.append(calories)
-                    calories = []
+        calories = []
+        for val in file:
+            if val.rstrip().isdigit():
+                calories.append(int(val))
+            else:
+                input_data.append(calories)
+                calories = []
         return input_data
 
     def solve_part_1(self):
