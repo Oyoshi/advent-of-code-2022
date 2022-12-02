@@ -19,7 +19,7 @@ class Day01Solver(DaySolver):
                 else:
                     input_data.append(calories)
                     calories = []
-        return [ft.reduce(lambda a, b: a + b, list_item) for list_item in input_data]
+        return input_data
 
     def solve_part_1(self):
         return sum_nth_max(self.input_data, 1)
@@ -29,4 +29,9 @@ class Day01Solver(DaySolver):
 
 
 def sum_nth_max(iterable_input, nth):
-    return ft.reduce(lambda a, b: a + b, sorted(iterable_input)[-nth:])
+    return ft.reduce(
+        lambda a, b: a + b,
+        sorted(
+            [ft.reduce(lambda a, b: a + b, list_item) for list_item in iterable_input]
+        )[-nth:],
+    )
