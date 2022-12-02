@@ -11,7 +11,7 @@ def test_solve_part_1():
     assert solver.solve(part=1)["val"] == 24000
 
 
-def test_solve_part_1():
+def test_solve_part_2():
     solver = Day01Solver()
     solver.load_input = load_input_mock
     assert solver.solve(part=2)["val"] == 45000
