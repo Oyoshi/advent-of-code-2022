@@ -1,4 +1,4 @@
-from ..day_solver import DaySolver
+from days_solvers import DaySolver
 from utils import sum_iterable
 
 
