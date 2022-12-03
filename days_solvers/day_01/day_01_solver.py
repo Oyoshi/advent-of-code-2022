@@ -1,5 +1,5 @@
-import functools as ft
 from ..day_solver import DaySolver
+from utils import sum_iterable
 
 
 class Day01Solver(DaySolver):
@@ -25,9 +25,6 @@ class Day01Solver(DaySolver):
 
 
 def sum_nth_max(iterable_input, nth):
-    return ft.reduce(
-        lambda a, b: a + b,
-        sorted(
-            [ft.reduce(lambda a, b: a + b, list_item) for list_item in iterable_input]
-        )[-nth:],
+    return sum_iterable(
+        sorted([sum_iterable(list_item) for list_item in iterable_input])[-nth:],
     )

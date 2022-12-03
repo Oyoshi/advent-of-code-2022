@@ -1,5 +1,5 @@
-import functools as ft
 from ..day_solver import DaySolver
+from utils import sum_iterable
 
 
 class Day03Solver(DaySolver):
@@ -21,7 +21,7 @@ class Day03Solver(DaySolver):
             for rucksack in rucksacks
         ]
         priorities = [convert_char_to_priority(char) for char in unique_items]
-        return ft.reduce(lambda a, b: a + b, priorities)
+        return sum_iterable(priorities)
 
     def solve_part_2(self):
         pass

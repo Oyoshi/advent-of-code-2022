@@ -1,5 +1,5 @@
-import functools as ft
 from ..day_solver import DaySolver
+from utils import sum_iterable
 
 
 class Day02Solver(DaySolver):
@@ -10,14 +10,12 @@ class Day02Solver(DaySolver):
         return [line.split() for line in file]
 
     def solve_part_1(self):
-        return ft.reduce(
-            lambda a, b: a + b,
+        return sum_iterable(
             [self.score(list_item, 1) for list_item in self.input_data],
         )
 
     def solve_part_2(self):
-        return ft.reduce(
-            lambda a, b: a + b,
+        return sum_iterable(
             [self.score(list_item, 2) for list_item in self.input_data],
         )
 
