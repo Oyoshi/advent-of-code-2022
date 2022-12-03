@@ -38,31 +38,28 @@ class Day02Solver(DaySolver):
             ):
                 return 6
             return 0
-        if part == 2:
-            if lhs == "A":
-                if rhs == "X":
-                    return 3
-                if rhs == "Y":
-                    return 1
-                if rhs == "Z":
-                    return 2
-            if lhs == "B":
-                if rhs == "X":
-                    return 1
-                if rhs == "Y":
-                    return 2
-                if rhs == "Z":
-                    return 3
-            if lhs == "C":
-                if rhs == "X":
-                    return 2
-                if rhs == "Y":
-                    return 3
-                if rhs == "Z":
-                    return 1
+        else:
+            if (
+                (lhs == "A" and rhs == "X")
+                or (lhs == "B" and rhs == "Z")
+                or (lhs == "C" and rhs == "Y")
+            ):
+                return 3
+            if (
+                (lhs == "A" and rhs == "Z")
+                or (lhs == "B" and rhs == "Y")
+                or (lhs == "C" and rhs == "X")
+            ):
+                return 2
+            if (
+                (lhs == "A" and rhs == "Y")
+                or (lhs == "B" and rhs == "X")
+                or (lhs == "C" and rhs == "Z")
+            ):
+                return 1
 
     def score_choose(self, choose, part):
         if part == 1:
             return 1 if choose == "X" else 2 if choose == "Y" else 3
-        if part == 2:
+        else:
             return 0 if choose == "X" else 3 if choose == "Y" else 6
