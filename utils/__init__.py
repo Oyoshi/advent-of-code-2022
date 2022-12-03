@@ -1,1 +1,1 @@
-from .utils import sum_iterable
+from .sum_iterable import sum_iterable

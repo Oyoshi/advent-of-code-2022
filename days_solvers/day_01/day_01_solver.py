@@ -26,5 +26,5 @@ class Day01Solver(DaySolver):
 
 def sum_nth_max(iterable_input, nth):
     return sum_iterable(
-        sorted([sum_iterable(list_item) for list_item in iterable_input])[-nth:],
+        sorted(map(sum_iterable, iterable_input))[-nth:],
     )

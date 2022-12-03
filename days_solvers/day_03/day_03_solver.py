@@ -1,3 +1,4 @@
+from itertools import chain
 from ..day_solver import DaySolver
 from utils import sum_iterable
 
@@ -10,7 +11,7 @@ class Day03Solver(DaySolver):
         return [line.rstrip() for line in file]
 
     def solve_part_1(self):
-        rucksacks = [list(items) for items in self.input_data]
+        rucksacks = map(list, self.input_data)
         unique_items = [
             next(
                 iter(
@@ -20,12 +21,15 @@ class Day03Solver(DaySolver):
             )
             for rucksack in rucksacks
         ]
-        priorities = [convert_char_to_priority(char) for char in unique_items]
-        return sum_iterable(priorities)
+        return sum_iterable(map(self.map_item_to_priority, unique_items))
 
     def solve_part_2(self):
-        pass
+        it = iter(map(list, self.input_data))
+        grouped_rucksacks = [
+            [set(lhs), set(mid), set(rhs)] for lhs, mid, rhs in zip(it, it, it)
+        ]
+        unique_items = [next(iter(set.intersection(*gr))) for gr in grouped_rucksacks]
+        return sum_iterable(map(self.map_item_to_priority, unique_items))
 
-
-def convert_char_to_priority(char):
-    return ord(char) - 96 if char.islower() else ord(char) - 38
+    def map_item_to_priority(self, char):
+        return ord(char) - 96 if char.islower() else ord(char) - 38

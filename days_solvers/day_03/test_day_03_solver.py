@@ -20,3 +20,6 @@ class Day02SolverTestCase(unittest.TestCase):
 
     def test_solve_part_1(self):
         assert self.solver.solve(part=1)["val"] == 157
+
+    def test_solve_part_2(self):
+        assert self.solver.solve(part=2)["val"] == 70
