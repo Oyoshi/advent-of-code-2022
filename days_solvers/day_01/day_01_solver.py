@@ -18,13 +18,12 @@ class Day01Solver(DaySolver):
         return input_data
 
     def solve_part_1(self):
-        return sum_nth_max(self.input_data, 1)
+        return self.sum_nth_max(self.input_data, 1)
 
     def solve_part_2(self):
-        return sum_nth_max(self.input_data, 3)
+        return self.sum_nth_max(self.input_data, 3)
 
-
-def sum_nth_max(iterable_input, nth):
-    return sum_iterable(
-        sorted(map(sum_iterable, iterable_input))[-nth:],
-    )
+    def sum_nth_max(self, iterable_input, nth):
+        return sum_iterable(
+            sorted(map(sum_iterable, iterable_input))[-nth:],
+        )
