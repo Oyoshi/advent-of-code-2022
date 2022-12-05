@@ -5,7 +5,7 @@ from .day_03_solver import Day03Solver
 class Day03SolverTestCase(unittest.TestCase):
     def setUp(self):
         self.solver = Day03Solver()
-        self.mock_input_data = [
+        mock_input_data = [
             "vJrwpWtwJgWrhcsFMMfFFhFp",
             "jqHRNqRjqzjGDLGLrsFMfFZSrLrFZsSL",
             "PmmdzqPrVvPwwTWBwg",
@@ -13,7 +13,7 @@ class Day03SolverTestCase(unittest.TestCase):
             "ttgJtRGJQctTZtZT",
             "CrZsJsPPZsGzwwsLwLmpwMDw",
         ]
-        self.solver.load_input = lambda: self.mock_input_data
+        self.solver.load_input = lambda: mock_input_data
 
     def tearDown(self):
         self.solver = None

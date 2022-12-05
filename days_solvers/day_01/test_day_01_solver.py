@@ -5,14 +5,14 @@ from .day_01_solver import Day01Solver
 class Day01SolverTestCase(unittest.TestCase):
     def setUp(self):
         self.solver = Day01Solver()
-        self.mock_input_data = [
+        mock_input_data = [
             [1000, 2000, 3000],
             [4000],
             [5000, 6000],
             [7000, 8000, 9000],
             [10000],
         ]
-        self.solver.load_input = lambda: self.mock_input_data
+        self.solver.load_input = lambda: mock_input_data
 
     def tearDown(self):
         self.solver = None

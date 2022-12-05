@@ -9,9 +9,9 @@ class Day01Solver(DaySolver):
     def load_input_impl(self, file):
         input_data = []
         calories = []
-        for val in file:
-            if val.rstrip().isdigit():
-                calories.append(int(val))
+        for line in file:
+            if line.rstrip().isdigit():
+                calories.append(int(line))
             else:
                 input_data.append(calories)
                 calories = []
