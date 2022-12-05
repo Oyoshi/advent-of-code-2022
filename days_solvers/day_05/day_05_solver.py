@@ -34,4 +34,13 @@ class Day05Solver(DaySolver):
         return "".join(crate.pop() for crate in crates)
 
     def solve_part_2(self):
-        pass
+        crates, moves = self.input_data[0], self.input_data[1]
+        for move in moves:
+            amount, src, dest = move
+            tmp_queue = []
+            while amount > 0:
+                tmp_queue.append(crates[src - 1].pop())
+                amount -= 1
+            while len(tmp_queue) != 0:
+                crates[dest - 1].append(tmp_queue.pop())
+        return "".join(crate.pop() for crate in crates)
