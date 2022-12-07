@@ -1,5 +1,4 @@
 from days_solvers import DaySolver
-from utils import sum_iterable
 
 
 class Day06Solver(DaySolver):
