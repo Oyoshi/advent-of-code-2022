@@ -6,3 +6,4 @@ from .day_04 import Day04Solver
 from .day_05 import Day05Solver
 from .day_06 import Day06Solver
 from .day_07 import Day07Solver
+from .day_08 import Day08Solver
