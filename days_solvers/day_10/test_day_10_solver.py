@@ -2,7 +2,7 @@ import unittest
 from .day_10_solver import Day10Solver
 
 
-class Day01SolverTestCase(unittest.TestCase):
+class Day10SolverTestCase(unittest.TestCase):
     def setUp(self):
         self.solver = Day10Solver()
         mock_input_data = [
