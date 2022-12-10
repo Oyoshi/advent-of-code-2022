@@ -36,8 +36,6 @@ class Day08Solver(DaySolver):
                 if self.input_data[rows - 1 - i][j] > max_val_from_bottom:
                     visibility_matrix[rows - 1 - i][j] = 1
                     max_val_from_bottom = self.input_data[rows - 1 - i][j]
-        print(visibility_matrix)
-
         return sum_iterable(sum_iterable(visibility_matrix))
 
     def solve_part_2(self):
