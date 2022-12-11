@@ -18,3 +18,6 @@ class Day11SolverTestCase(unittest.TestCase):
 
     def test_solve_part_1(self):
         assert self.solver.solve(part=1)["val"] == 10605
+
+    def test_solve_part_2(self):
+        assert self.solver.solve(part=2)["val"] == 2713310158

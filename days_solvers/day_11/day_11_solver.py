@@ -1,4 +1,5 @@
 from copy import deepcopy
+from math import lcm
 from days_solvers import DaySolver
 from utils import mul_iterable
 
@@ -42,39 +43,38 @@ class Day11Solver(DaySolver):
         ]
 
     def solve_part_1(self):
-        return self.simulate_monkey_in_the_middle(20, True)
+        return self.simulate_monkey_in_the_middle(20, 3)
 
     def solve_part_2(self):
-        return self.simulate_monkey_in_the_middle(10000, False)
+        return self.simulate_monkey_in_the_middle(10000, 1)
 
-    def simulate_monkey_in_the_middle(self, rounds, divide):
+    def simulate_monkey_in_the_middle(self, rounds, worry_div):
         monkeys = deepcopy(self.input_data)
         monkeys_activity = [0] * len(monkeys)
+        modulo = lcm(*map(lambda m: m.div, monkeys))
         for _ in range(rounds):
             for mi in range(len(monkeys)):
                 monkey = monkeys[mi]
-                targets = []
                 mod = monkey.mod
                 l, op, r = mod["lhs"], mod["op"], mod["rhs"]
-                for i in range(len(monkey.items)):
+                while len(monkey.items) != 0:
                     monkeys_activity[mi] = monkeys_activity[mi] + 1
-                    item = monkey.items[i]
+                    item = monkey.items.pop()
                     lhs = item if l == "old" else int(l)
                     rhs = item if r == "old" else int(r)
-                    worry_lvl = 0
-                    if op == "+":
-                        worry_lvl = lhs + rhs
-                    elif op == "-":
-                        worry_lvl = lhs - rhs
-                    elif op == "*":
-                        worry_lvl = lhs * rhs
-                    else:
-                        worry_lvl = lhs // rhs
-                    worry_lvl = worry_lvl // 3 if divide else worry_lvl
-                    targets.append(monkey.throw_dest[worry_lvl % monkey.div == 0])
-                    monkey.items[i] = worry_lvl
-                while len(targets) != 0:
-                    dest = targets.pop(0)
-                    item = monkey.items.pop(0)
-                    monkeys[dest].items.append(item)
+                    worry_lvl = self.evaluate(lhs, op, rhs) // worry_div
+                    dest = monkey.throw_dest[worry_lvl % monkey.div == 0]
+                    monkeys[dest].items.append(
+                        worry_lvl if worry_div != 1 else worry_lvl % modulo
+                    )
         return mul_iterable((sorted(monkeys_activity)[-2:]))
+
+    def evaluate(self, lhs, op, rhs):
+        if op == "+":
+            return lhs + rhs
+        elif op == "-":
+            return lhs - rhs
+        elif op == "*":
+            return lhs * rhs
+        else:
+            return lhs // rhs
