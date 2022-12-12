@@ -10,3 +10,4 @@ from .day_08 import Day08Solver
 from .day_09 import Day09Solver
 from .day_10 import Day10Solver
 from .day_11 import Day11Solver
+from .day_12 import Day12Solver
