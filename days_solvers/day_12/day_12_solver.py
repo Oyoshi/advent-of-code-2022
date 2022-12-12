@@ -1,6 +1,20 @@
 from days_solvers import DaySolver
 
 
+class FifoQueue:
+    def __init__(self, init):
+        self.arr = init
+
+    def enqueue(self, e):
+        self.arr.insert(0, e)
+
+    def dequeue(self):
+        return self.arr.pop()
+
+    def is_empty(self):
+        return len(self.arr) == 0
+
+
 class Day12Solver(DaySolver):
     def __init__(self):
         self.day = "12"
@@ -27,10 +41,10 @@ class Day12Solver(DaySolver):
         matrix, start, end = self.input_data
         distance = [[-1] * len(matrix[0]) for _ in range(len(matrix))]
         sx, sy = start
-        Q = [start]
+        Q = FifoQueue([start])
         distance[sx][sy] = 0
-        while len(Q) != 0:
-            pos = Q.pop()
+        while not Q.is_empty():
+            pos = Q.dequeue()
             x, y = pos
             neighbours = self.compute_neighbours(
                 x, y, len(matrix) - 1, len(matrix[0]) - 1
@@ -42,7 +56,10 @@ class Day12Solver(DaySolver):
                         return distance[x][y] + 1
                     if distance[nx][ny] == -1:
                         distance[nx][ny] = distance[x][y] + 1
-                        Q.insert(0, (nx, ny))
+                        Q.enqueue((nx, ny))
+
+    def solve_part_2(self):
+        pass
 
     def compute_neighbours(self, x, y, x_max, y_max):
         return [
@@ -50,6 +67,3 @@ class Day12Solver(DaySolver):
             for n in [(-1, 0), (1, 0), (0, -1), (0, 1)]
             if (0 <= x + n[0] <= x_max) and (0 <= y + n[1] <= y_max)
         ]
-
-    def solve_part_2(self):
-        pass
