@@ -1,18 +1,6 @@
+from copy import deepcopy
 from days_solvers import DaySolver
-
-
-class FifoQueue:
-    def __init__(self, init):
-        self.arr = init
-
-    def enqueue(self, e):
-        self.arr.insert(0, e)
-
-    def dequeue(self):
-        return self.arr.pop()
-
-    def is_empty(self):
-        return len(self.arr) == 0
+from utils import FifoQueue
 
 
 class Day12Solver(DaySolver):
@@ -20,28 +8,64 @@ class Day12Solver(DaySolver):
         self.day = "12"
 
     def load_input_impl(self, file):
-        matrix = [list(line.rstrip()) for line in file]
-        start = [
+        return [list(line.rstrip()) for line in file]
+
+    def solve_part_1(self):
+        matrix = deepcopy(self.input_data)
+        src = [
             (ix, iy)
             for ix, row in enumerate(matrix)
             for iy, i in enumerate(row)
             if i == "S"
         ][0]
-        end = [
+        dest = [
             (ix, iy)
             for ix, row in enumerate(matrix)
             for iy, i in enumerate(row)
             if i == "E"
         ][0]
-        matrix[start[0]][start[1]] = "a"
-        matrix[end[0]][end[1]] = "z"
-        return [matrix, start, end]
+        sx, sy = src
+        dx, dy = dest
+        matrix[sx][sy] = "a"
+        matrix[dx][dy] = "z"
+        return self.compute_shortest_path_length(matrix, src, dest)
 
-    def solve_part_1(self):
-        matrix, start, end = self.input_data
-        distance = [[-1] * len(matrix[0]) for _ in range(len(matrix))]
-        sx, sy = start
-        Q = FifoQueue([start])
+    def solve_part_2(self):
+        matrix = deepcopy(self.input_data)
+        s_coords = [
+            (ix, iy)
+            for ix, row in enumerate(matrix)
+            for iy, i in enumerate(row)
+            if i == "S"
+        ][0]
+        dest = [
+            (ix, iy)
+            for ix, row in enumerate(matrix)
+            for iy, i in enumerate(row)
+            if i == "E"
+        ][0]
+        matrix[s_coords[0]][s_coords[1]] = "a"
+        matrix[dest[0]][dest[1]] = "z"
+        sources = [
+            (ix, iy)
+            for ix, row in enumerate(matrix)
+            for iy, i in enumerate(row)
+            if i == "a"
+        ]
+        return min(
+            filter(
+                lambda e: e != -1,
+                [
+                    self.compute_shortest_path_length(matrix, src, dest)
+                    for src in sources
+                ],
+            )
+        )
+
+    def compute_shortest_path_length(self, matrix, src, dest):
+        distance = [[0] * len(matrix[0]) for _ in range(len(matrix))]
+        Q = FifoQueue([src])
+        sx, sy = src
         distance[sx][sy] = 0
         while not Q.is_empty():
             pos = Q.dequeue()
@@ -52,14 +76,12 @@ class Day12Solver(DaySolver):
             for n in neighbours:
                 nx, ny = n
                 if ord(matrix[nx][ny]) - ord(matrix[x][y]) <= 1:
-                    if (nx, ny) == end:
+                    if (nx, ny) == dest:
                         return distance[x][y] + 1
-                    if distance[nx][ny] == -1:
+                    if distance[nx][ny] == 0:
                         distance[nx][ny] = distance[x][y] + 1
                         Q.enqueue((nx, ny))
-
-    def solve_part_2(self):
-        pass
+        return -1
 
     def compute_neighbours(self, x, y, x_max, y_max):
         return [
