@@ -1,4 +1,5 @@
 from ast import literal_eval
+from functools import cmp_to_key
 from days_solvers import DaySolver
 from utils import sum_iterable
 
@@ -21,6 +22,14 @@ class Day13Solver(DaySolver):
                 if e == -1
             ]
         )
+
+    def solve_part_2(self):
+        divider_packets = [[[2]], [[6]]]
+        res = sorted(
+            self.input_data + divider_packets,
+            key=cmp_to_key(lambda x, y: self.compare(x, y)),
+        )
+        return (res.index(divider_packets[0]) + 1) * (res.index(divider_packets[1]) + 1)
 
     def compare(self, lhs, rhs):
         match lhs, rhs:
@@ -48,6 +57,3 @@ class Day13Solver(DaySolver):
                     case [*a], [*b]:
                         ret = self.compare(a, b)
                         return ret if ret != 0 else self.compare(xs, ys)
-
-    def solve_part_2(self):
-        pass
