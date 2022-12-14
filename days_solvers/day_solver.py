@@ -8,10 +8,10 @@ class DaySolver(ABC):
         self.input_data = self.load_input()
         solve_impl = getattr(self, f"solve_part_{part}")
         if benchmark:
-            start = time.process_time() * 1000
+            start = time.time() * 1000
         res = solve_impl()
         if benchmark:
-            end = time.process_time() * 1000
+            end = time.time() * 1000
             return {"time": end - start, "val": res}
         return {"time": None, "val": res}
 

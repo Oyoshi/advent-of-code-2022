@@ -13,7 +13,7 @@ class TaskSolver:
     def solve_benchmark(self):
         solvers = [
             self.get_solver(day)
-            for day in [self.parse_day(day) for day in range(1, AOC_DAYS + 1)]
+            for day in [self.parse_day(day) for day in range(1, 14 + 1)]
         ]
         results = [
             {
@@ -42,5 +42,5 @@ class TaskSolver:
     
     def generate_markdown_table(self, results):
         table_header = '|        | Part 1 [ms] | Part 2 [ms]  |\n| ------ | ------  | ------  |\n'
-        table_body = ''.join([f"| Day {self.parse_day(idx + 1)} | {res['part1']['time']} | {res['part2']['time']} |\n" for idx, res in enumerate(results)])
+        table_body = ''.join([f"| Day {self.parse_day(idx + 1)} | {res['part1']['time']:.2f} | {res['part2']['time']:.2f} |\n" for idx, res in enumerate(results)])
         return table_header + table_body
