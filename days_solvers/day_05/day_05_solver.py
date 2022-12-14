@@ -1,3 +1,4 @@
+from copy import deepcopy
 from days_solvers import DaySolver
 
 
@@ -25,7 +26,8 @@ class Day05Solver(DaySolver):
         return [crates, moves]
 
     def solve_part_1(self):
-        crates, moves = self.input_data[0], self.input_data[1]
+        input_data = deepcopy(self.input_data)
+        crates, moves = input_data[0], input_data[1]
         for move in moves:
             amount, src, dest = move
             while amount > 0:
@@ -34,7 +36,8 @@ class Day05Solver(DaySolver):
         return "".join(crate.pop() for crate in crates)
 
     def solve_part_2(self):
-        crates, moves = self.input_data[0], self.input_data[1]
+        input_data = deepcopy(self.input_data)
+        crates, moves = input_data[0], input_data[1]
         for move in moves:
             amount, src, dest = move
             tmp_queue = []

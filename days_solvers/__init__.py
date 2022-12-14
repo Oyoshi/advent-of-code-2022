@@ -13,3 +13,4 @@ from .day_11 import Day11Solver
 from .day_12 import Day12Solver
 from .day_13 import Day13Solver
 from .day_14 import Day14Solver
+from .day_15 import Day15Solver

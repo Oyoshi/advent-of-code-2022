@@ -1,3 +1,4 @@
+from copy import deepcopy
 from days_solvers import DaySolver
 
 
@@ -36,7 +37,7 @@ class Day14Solver(DaySolver):
         return rocks_pos
 
     def solve_part_1(self):
-        rocks = self.input_data
+        rocks = deepcopy(self.input_data)
         sands = set()
         max_y = max(rocks, key=lambda e: e[0])[0]
         can_produce = True
@@ -69,7 +70,7 @@ class Day14Solver(DaySolver):
                         can_produce = True
 
     def solve_part_2(self):
-        rocks = self.input_data
+        rocks = deepcopy(self.input_data)
         sands = set()
         max_y = max(rocks, key=lambda e: e[0])[0] + 2
         can_produce = True

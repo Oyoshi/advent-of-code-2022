@@ -27,6 +27,15 @@ class Day07Solver(DaySolver):
         dir_tree = self.create_tree()
         self.traverse_tree_acc(dir_tree)
         return self.sum_tree_weights(dir_tree)
+    
+    def solve_part_2(self):
+        dir_tree = self.create_tree()
+        self.traverse_tree_acc(dir_tree)
+        used_space_total = dir_tree.acc_size
+        total_space = 70000000
+        min_space = 30000000
+        diff = total_space - used_space_total
+        return self.find_min_dir(dir_tree, total_space, min_space - diff)
 
     def create_tree(self):
         dir_tree = TreeNode("/")
@@ -59,15 +68,6 @@ class Day07Solver(DaySolver):
             for subdir in tree.children:
                 partial_sum += self.sum_tree_weights(subdir)
         return tree.acc_size + partial_sum if tree.acc_size <= 100000 else partial_sum
-
-    def solve_part_2(self):
-        dir_tree = self.create_tree()
-        self.traverse_tree_acc(dir_tree)
-        used_space_total = dir_tree.acc_size
-        total_space = 70000000
-        min_space = 30000000
-        diff = total_space - used_space_total
-        return self.find_min_dir(dir_tree, total_space, min_space - diff)
 
     def find_min_dir(self, tree, cur_min, target):
         if tree.acc_size < target:

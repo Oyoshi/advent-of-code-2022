@@ -22,10 +22,7 @@ class TaskSolver:
             }
             for solver in solvers
         ]
-        for idx, res in enumerate(results):
-            logging.info(
-                f"Day:{self.parse_day(idx + 1)}/Part:1:{res['part1']['time']}/Part:2:{res['part2']['time']}"
-            )
+        print(self.generate_markdown_table(results))
 
     def solve_day(self, config):
         day, part = self.parse_day(config.day), config.part
@@ -42,3 +39,8 @@ class TaskSolver:
         DaySolver = getattr(module, class_name)
         day_solver = DaySolver()
         return day_solver
+    
+    def generate_markdown_table(self, results):
+        table_header = '|        | Part 1 [ms] | Part 2 [ms]  |\n| ------ | ------  | ------  |\n'
+        table_body = ''.join([f"| Day {self.parse_day(idx + 1)} | {res['part1']['time']} | {res['part2']['time']} |\n" for idx, res in enumerate(results)])
+        return table_header + table_body
