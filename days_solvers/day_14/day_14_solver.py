@@ -10,12 +10,7 @@ class Day14Solver(DaySolver):
             [(tuple(map(int, e.split(",")))) for e in line.rstrip().split(" -> ")]
             for line in file
         ]
-        flatten = [coord for row in input_data for coord in row]
-        max_x, max_y = (
-            max(flatten, key=lambda e: e[0])[0],
-            max(flatten, key=lambda e: e[1])[1],
-        )
-        caves = [["."] * (max_x + 1) for _ in range(max_y + 1)]
+        rocks_pos = set()
         for rocks in input_data:
             k = 1
             while k < len(rocks):
@@ -26,44 +21,76 @@ class Day14Solver(DaySolver):
                 if px == cx:
                     if py < cy:
                         for idx in range(py, cy + 1):
-                            caves[idx][cx] = "#"
+                            rocks_pos.add((idx, cx))
                     else:
                         for idx in range(cy, py + 1):
-                            caves[idx][cx] = "#"
+                            rocks_pos.add((idx, cx))
                 else:
                     if px < cx:
                         for idx in range(px, cx + 1):
-                            caves[cy][idx] = "#"
+                            rocks_pos.add((cy, idx))
                     else:
                         for idx in range(cx, px + 1):
-                            caves[cy][idx] = "#"
+                            rocks_pos.add((cy, idx))
                 k += 1
-        return caves
+        return rocks_pos
 
     def solve_part_1(self):
-        caves = self.input_data
-        max_y = len(caves)
-        sand_ctr = 0
+        rocks = self.input_data
+        sands = set()
+        max_y = max(rocks, key=lambda e: e[0])[0]
         can_produce = True
         sand_coord = None
         while True:
             if can_produce:
                 sand_coord = (0, 500)
                 can_produce = False
-                sand_ctr += 1
             y, x = sand_coord
-            if y + 1 == max_y:
-                return sand_ctr - 1
-            if caves[y + 1][x] == ".":
+            if y + 1 <= max_y and (y + 1, x) not in rocks and (y + 1, x) not in sands:
                 sand_coord = (y + 1, x)
             else:
-                if caves[y + 1][x - 1] == ".":
+                if (
+                    y + 1 <= max_y
+                    and (y + 1, x - 1) not in rocks
+                    and (y + 1, x - 1) not in sands
+                ):
                     sand_coord = (y + 1, x - 1)
-                elif caves[y + 1][x + 1] == ".":
+                elif (
+                    y + 1 <= max_y
+                    and (y + 1, x + 1) not in rocks
+                    and (y + 1, x + 1) not in sands
+                ):
                     sand_coord = (y + 1, x + 1)
                 else:
-                    caves[y][x] = "o"
-                    can_produce = True
+                    if y == max_y:
+                        return len(sands)
+                    else:
+                        sands.add((y, x))
+                        can_produce = True
 
     def solve_part_2(self):
-        pass
+        rocks = self.input_data
+        sands = set()
+        max_y = max(rocks, key=lambda e: e[0])[0] + 2
+        can_produce = True
+        sand_coord = None
+        while True:
+            if can_produce:
+                sand_coord = (0, 500)
+                can_produce = False
+            y, x = sand_coord
+            rocks.add((max_y, x))
+            rocks.add((max_y, x - 1))
+            rocks.add((max_y, x + 1))
+            if (y + 1, x) not in rocks and (y + 1, x) not in sands:
+                sand_coord = (y + 1, x)
+            else:
+                if (y + 1, x - 1) not in rocks and (y + 1, x - 1) not in sands:
+                    sand_coord = (y + 1, x - 1)
+                elif (y + 1, x + 1) not in rocks and (y + 1, x + 1) not in sands:
+                    sand_coord = (y + 1, x + 1)
+                else:
+                    sands.add((y, x))
+                    can_produce = True
+                    if y == 0:
+                        return len(sands)
