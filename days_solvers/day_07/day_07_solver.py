@@ -27,7 +27,7 @@ class Day07Solver(DaySolver):
         dir_tree = self.create_tree()
         self.traverse_tree_acc(dir_tree)
         return self.sum_tree_weights(dir_tree)
-    
+
     def solve_part_2(self):
         dir_tree = self.create_tree()
         self.traverse_tree_acc(dir_tree)

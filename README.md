@@ -20,7 +20,7 @@ options:
 ```
 Times for the benchmark will be measured for all solutions (single run, sorry). Input data can be found in `./inputs` folder :trollface:.
 
-There are also Unit Tests which cover basic scenarios described in the task example part. Each commit triggers GA pipeline and run all UTs.
+There are also Unit Tests which cover basic scenarios described in the example part of each task. Each commit triggers GA pipeline and run all UTs.
 
 ### Benchmark
 
