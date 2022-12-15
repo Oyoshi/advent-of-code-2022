@@ -35,7 +35,7 @@ def create_args_parser():
     args_parser.add_argument(
         "-b",
         "--benchmark",
-        action="store_true",
+        type=int,
         help="compute benchmarks",
     )
     return args_parser

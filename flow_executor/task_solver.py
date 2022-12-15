@@ -3,25 +3,23 @@ import logging
 import statistics
 from .args_parser import AOC_DAYS
 
-TRIALS = 10
-
 
 class TaskSolver:
     def solve(self, config):
         if config.benchmark:
-            self.solve_benchmark()
+            self.solve_benchmark(config.benchmark)
         else:
             self.solve_day(config)
 
-    def solve_benchmark(self):
+    def solve_benchmark(self, trials):
         solvers = [
             self.get_solver(day)
             for day in [self.parse_day(day) for day in range(1, AOC_DAYS + 1)]
         ]
         results = [
             {
-                "part1": [solver.solve(part=1, benchmark=True) for _ in range(TRIALS)],
-                "part2": [solver.solve(part=2, benchmark=True) for _ in range(TRIALS)],
+                "part1": [solver.solve(part=1, benchmark=True) for _ in range(trials)],
+                "part2": [solver.solve(part=2, benchmark=True) for _ in range(trials)],
             }
             for solver in solvers
         ]
