@@ -37,5 +37,6 @@ def create_args_parser():
         "--benchmark",
         type=int,
         help="compute benchmarks",
+        metavar="int",
     )
     return args_parser
