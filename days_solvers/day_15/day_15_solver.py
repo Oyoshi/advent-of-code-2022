@@ -26,7 +26,28 @@ class Day15Solver(DaySolver):
         return self.find_no_beacons(2000000)
 
     def solve_part_2(self):
-        pass
+        # TODO - refactor it asnd add missing UT
+        data = list(
+            map(
+                lambda e: (
+                    e[0][0],
+                    e[0][1],
+                    self.compute_manhattan_distance(e[0], e[1]),
+                ),
+                self.input_data,
+            )
+        )
+        a = (
+            set(x - y + r + 1 for x, y, r in data)
+            .intersection(x - y - r - 1 for x, y, r in data)
+            .pop()
+        )
+        b = (
+            set(x + y + r + 1 for x, y, r in data)
+            .intersection(x + y - r - 1 for x, y, r in data)
+            .pop()
+        )
+        return (a + b) * 4000000 // 2 + (b - a) // 2
 
     def find_no_beacons(self, target_y):
         beacons = set(map(lambda e: e[1], self.input_data))
