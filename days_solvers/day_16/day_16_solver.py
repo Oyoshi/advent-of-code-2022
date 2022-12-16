@@ -30,6 +30,11 @@ class Day16Solver(DaySolver):
         paths = self.scan_space_using_bfs(src)
         return self.find_max_flow(paths, set([src]), 0, src, 29, 0)
 
+    def solve_part_2(self):
+        src = "AA"
+        paths = self.scan_space_using_bfs(src)
+        return self.find_max_flow_with_elephant(paths, set([src]), 0, src, 25, 0, False)
+
     def scan_space_using_bfs(self, src):
         paths = {}
         vertices = sorted(
@@ -97,5 +102,55 @@ class Day16Solver(DaySolver):
             )
         return current_max
 
-    def solve_part_2(self):
-        pass
+    def find_max_flow_with_elephant(
+        self, paths, opened, flow, v, time_left, current_max, elephant
+    ):
+        current_max = max(flow, current_max)
+
+        if time_left <= 0:
+            return current_max
+
+        if v not in opened:
+            current_max = self.find_max_flow_with_elephant(
+                paths,
+                opened.union([v]),
+                flow + self.input_data[v]["flow"] * time_left,
+                v,
+                time_left - 1,
+                current_max,
+                elephant,
+            )
+            if not elephant:
+                current_max = max(
+                    current_max,
+                    self.find_max_flow_with_elephant(
+                        paths,
+                        set([v]) | opened,
+                        flow + self.input_data[v]["flow"] * time_left,
+                        "AA",
+                        25,
+                        current_max,
+                        True,
+                    ),
+                )
+        else:
+            current_max = max(
+                current_max,
+                max(
+                    [
+                        self.find_max_flow_with_elephant(
+                            paths,
+                            opened,
+                            flow,
+                            vv,
+                            time_left - paths[v][vv],
+                            current_max,
+                            elephant,
+                        )
+                        for vv in paths[v].keys()
+                        if vv not in opened
+                    ],
+                    default=-1,
+                ),
+            )
+        return current_max
