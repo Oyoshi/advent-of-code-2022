@@ -55,7 +55,7 @@ class Day15Solver(DaySolver):
             while i < len(sorted_segments):
                 max_y = max(max_y, sorted_segments[i - 1][1])
                 if max_y + 1 < sorted_segments[i][0]:
-                    return 4000000 * (sorted_segments[i - 1][1] + 1) + y
+                    return max_range * (sorted_segments[i - 1][1] + 1) + y
                 i += 1
             y += 1
         return -1
