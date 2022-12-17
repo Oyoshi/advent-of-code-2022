@@ -73,13 +73,16 @@ class Day16Solver(DaySolver):
             return current_max
 
         if v not in opened:
-            current_max = self.find_max_flow(
-                paths,
-                opened.union([v]),
-                flow + self.input_data[v]["flow"] * time_left,
-                v,
-                time_left - 1,
+            current_max = max(
                 current_max,
+                self.find_max_flow(
+                    paths,
+                    opened.union([v]),
+                    flow + self.input_data[v]["flow"] * time_left,
+                    v,
+                    time_left - 1,
+                    current_max,
+                ),
             )
         else:
             current_max = max(
@@ -111,14 +114,17 @@ class Day16Solver(DaySolver):
             return current_max
 
         if v not in opened:
-            current_max = self.find_max_flow_with_elephant(
-                paths,
-                opened.union([v]),
-                flow + self.input_data[v]["flow"] * time_left,
-                v,
-                time_left - 1,
+            current_max = max(
                 current_max,
-                elephant,
+                self.find_max_flow_with_elephant(
+                    paths,
+                    opened.union([v]),
+                    flow + self.input_data[v]["flow"] * time_left,
+                    v,
+                    time_left - 1,
+                    current_max,
+                    elephant,
+                ),
             )
             if not elephant:
                 current_max = max(
