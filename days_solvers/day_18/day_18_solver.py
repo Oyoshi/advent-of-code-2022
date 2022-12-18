@@ -28,4 +28,47 @@ class Day18Solver(DaySolver):
         )
 
     def solve_part_2(self):
-        pass
+        min_val, max_val = self.compute_min_max_space_values()
+        initial_cube = (min_val, min_val, min_val)
+        cubes = [initial_cube]
+        visited = {cubes[0]}
+        surfaces = 0
+        while len(cubes) > 0:
+            cube = cubes.pop()
+            neighbours = self.generate_neighbours(cube, min_val, max_val)
+            for n in neighbours:
+                if n in visited:
+                    continue
+                if n in self.input_data:
+                    surfaces += 1
+                else:
+                    visited.add(n)
+                    cubes.append(n)
+        return surfaces
+
+    def compute_min_max_space_values(self):
+        x_min, x_max = self.compute_axis_boundaries(0)
+        y_min, y_max = self.compute_axis_boundaries(1)
+        z_min, z_max = self.compute_axis_boundaries(2)
+        min_val = min(x_min, y_min, z_min) - 1
+        max_val = max(x_max, y_max, z_max) + 1
+        return min_val, max_val
+
+    def compute_axis_boundaries(self, axis):
+        sorted_points = sorted(self.input_data, key=lambda e: e[axis])
+        return sorted_points[0][axis], sorted_points[len(sorted_points) - 1][axis]
+
+    def generate_neighbours(self, cube, min_val, max_val):
+        x, y, z = cube
+        neighbours = [
+            (x + 1, y, z),
+            (x - 1, y, z),
+            (x, y - 1, z),
+            (x, y + 1, z),
+            (x, y, z - 1),
+            (x, y, z + 1),
+        ]
+        return filter(
+            lambda n: all([min_val <= coord and coord <= max_val for coord in n]),
+            neighbours,
+        )
