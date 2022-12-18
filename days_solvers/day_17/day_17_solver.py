@@ -22,26 +22,21 @@ class Day17Solver(DaySolver):
 
     def solve_part_2(self):
         jets_pattern, rocks = self.input_data
-        r1, r2 = self.find_cycle(jets_pattern, rocks)
-        initial_height = r1[2]
-        height_in_cycle = r2[2] - r1[2]
-        cycle_length = r2[0] - r1[0]
-        cycles_num = (1000000000000 - r1[0]) // cycle_length
-        print(cycle_length, height_in_cycle, cycles_num * height_in_cycle)
-        acc_height = cycles_num * height_in_cycle
-        print(1514285714288 - cycles_num * height_in_cycle)
-        total = (
-            initial_height + acc_height
-        )  # + self.simulate_falling_rocks(jets_pattern, rocks, 49, 78, 1000000000000 - cycles_num * cycle_length)
-        print(1514285714288 - total)
-        # print(1000000000000 - cycles_num * cycle_length - r1[0])
+        rocks_ctr, step, height = self.find_cycle(jets_pattern, rocks)
+        cycle_length = rocks_ctr
+        cycles_num = 1000000000000 // (cycle_length + 1)
+        acc_height = cycles_num * height
+        print(rocks_ctr, cycles_num * (cycle_length + 1))
+        rest_height = self.simulate_falling_rocks(
+            jets_pattern, rocks, 0, step, 1000000000000 - cycles_num * cycle_length
+        )
+        return acc_height + rest_height
 
     def find_cycle(self, jets_pattern, rocks):
         rocks_ctr = 0
         step = 0
         height = 0
         occupied = set([(x, 0) for x in range(-1, 8)])  # ground
-        register = []
         while True:
             can_fall = True
             rock = rocks[rocks_ctr % len(rocks)]
@@ -70,26 +65,38 @@ class Day17Solver(DaySolver):
                     )
                     height = max(height, max(occupied_by_rock, key=lambda e: e[1])[1])
                     occupied |= occupied_by_rock
-                register.append((rocks_ctr, step, height))
-                i, j = self.check_for_cycle(register, len(rocks), len(jets_pattern))
-                if i != -1 and j != -1:
-                    return register[i], register[j - 1]
                 step += 1
             rocks_ctr += 1
+            if rocks_ctr >= 25:
+                cycle_height = self.check_for_cycle(occupied, height)
+                if cycle_height != -1:
+                    return rocks_ctr - 1, step - 1, cycle_height
 
-    def check_for_cycle(self, register, rocks_len, jets_pattern_len):
-        cyclotron = list(
-            map(lambda r: (r[0] % rocks_len, r[1] % jets_pattern_len), register)
+    def check_for_cycle(self, occupied, height):
+        first_floor = sorted(
+            list(set([(x, 1) for x in range(-1, 8)]).intersection(occupied)),
+            key=lambda e: e[0],
         )
-        for i in range(len(cyclotron)):
-            for j in range(i + 1, len(cyclotron)):
-                if cyclotron[i] == cyclotron[j]:
-                    if (
-                        2 * j - i < len(cyclotron)
-                        and cyclotron[i:j] == cyclotron[j : 2 * j - i]
-                    ):
-                        return i, j
-        return -1, -1
+        matches = []
+        for h in range(2, height + 1):
+            floor = sorted(
+                list(set([(x, h) for x in range(-1, 8)]).intersection(occupied)),
+                key=lambda e: e[0],
+            )
+            if len(floor) != len(first_floor):
+                continue
+            diff = [(f2[0] - f1[0], f2[1]) for f1, f2 in zip(first_floor, floor)]
+            if len(diff) == len(list(filter(lambda e: e[0] == 0, diff))):
+                matches.append(h)
+        differences = [j - i for i, j in zip(matches[:-1], matches[1:])]
+        print(matches)
+        print(sorted(occupied, key=lambda e: e[1]))
+        return matches[0] - 1
+        # idx = differences[1:].index(differences[0]) if len(differences) > 0 and differences[0] in differences[1:] else -1
+        # if idx != -1:
+        #    print(matches[idx+2])
+        #    print(sorted(occupied, key=lambda e: e[1]))
+        # return -1 if idx == -1 else matches[idx+2] - 1
 
     def simulate_falling_rocks(self, jets_pattern, rocks, rocks_ctr, step, until):
         jets_pattern, rocks = self.input_data
