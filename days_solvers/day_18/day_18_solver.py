@@ -6,19 +6,18 @@ class Day18Solver(DaySolver):
         self.day = "18"
 
     def load_input_impl(self, file):
-        return [list(map(int, line.rstrip().split(","))) for line in file]
+        return [tuple(map(int, line.rstrip().split(","))) for line in file]
 
     def solve_part_1(self):
         surfaces = {idx: 6 for idx in range(len(self.input_data))}
         for i in range(len(self.input_data)):
             for j in range(i + 1, len(self.input_data)):
-                if self.are_connected(i, j):
-                    surfaces[i] = surfaces[i] - 1 if surfaces[i] > 0 else 0
-                    surfaces[j] = surfaces[j] - 1 if surfaces[j] > 0 else 0
+                if self.are_connected(self.input_data[i], self.input_data[j]):
+                    surfaces[i] -= 1
+                    surfaces[j] -= 1
         return sum(surfaces.values())
 
-    def are_connected(self, i, j):
-        c1, c2 = self.input_data[i], self.input_data[j]
+    def are_connected(self, c1, c2):
         x1, x2 = c1[0], c2[0]
         y1, y2 = c1[1], c2[1]
         z1, z2 = c1[2], c2[2]
