@@ -10,3 +10,6 @@ class FifoQueue:
 
     def is_empty(self):
         return len(self.arr) == 0
+
+    def top(self):
+        return self.arr[len(self.arr) - 1]
