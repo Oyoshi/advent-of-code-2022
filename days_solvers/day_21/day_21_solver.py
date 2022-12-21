@@ -24,7 +24,7 @@ class NodeVisitor:
         return visitor(node)
 
     def generic_visit(self, node):
-        raise Exception("No visit_{} method".format(type(node).__name__))
+        raise Exception(f"No visit_{type(node).__name__} method")
 
 
 class TreeWalker(NodeVisitor):
