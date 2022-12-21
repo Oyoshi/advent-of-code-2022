@@ -2,34 +2,36 @@ from days_solvers import DaySolver
 
 
 class Node:
-    pass
+    def __init__(self, monkey):
+        self.monkey = monkey
 
 
 class BinaryOperatorNode(Node):
-    def __init__(self, lhs, op, rhs):
+    def __init__(self, monkey, lhs, op, rhs):
+        super().__init__(monkey)
+        self.token = "binop"
         self.lhs = lhs
         self.op = op
         self.rhs = rhs
 
 
 class IntegerNode(Node):
-    def __init__(self, val):
+    def __init__(self, monkey, val):
+        super().__init__(monkey)
+        self.token = "int"
         self.value = val
 
 
-class NodeVisitor:
-    def visit(self, node):
-        method_name = "visit_" + type(node).__name__
-        visitor = getattr(self, method_name, self.generic_visit)
-        return visitor(node)
-
-    def generic_visit(self, node):
-        raise Exception(f"No visit_{type(node).__name__} method")
-
-
-class TreeWalker(NodeVisitor):
+class TreeWalker:
     def evaluate(self, ast):
         return self.visit(ast)
+
+    def visit(self, node):
+        if node.token == "int":
+            return self.visit_IntegerNode(node)
+        elif node.token == "binop":
+            return self.visit_BinaryOperatorNode(node)
+        raise Exception(f"No visitor")
 
     def visit_BinaryOperatorNode(self, node):
         if node.op == "+":
@@ -59,14 +61,14 @@ class Day21Solver(DaySolver):
         tree_walker = TreeWalker()
         return tree_walker.evaluate(ast)
 
+    def solve_part_2(self):
+        pass
+
     def build_tree(self, monkey):
         instr = self.input_data[monkey]
         if instr.isdigit():
-            return IntegerNode(int(instr))
+            return IntegerNode(monkey, int(instr))
         lhs, op, rhs = instr.split(" ")
         lhs_node = self.build_tree(lhs)
         rhs_node = self.build_tree(rhs)
-        return BinaryOperatorNode(lhs_node, op, rhs_node)
-
-    def solve_part_2(self):
-        pass
+        return BinaryOperatorNode(monkey, lhs_node, op, rhs_node)
