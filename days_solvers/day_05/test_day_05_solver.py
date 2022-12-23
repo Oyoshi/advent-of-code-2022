@@ -7,7 +7,7 @@ class Day05SolverTestCase(unittest.TestCase):
         self.solver = Day05Solver()
         mock_crates = [["Z", "N"], ["M", "C", "D"], ["P"]]
         mock_moves = [(1, 2, 1), (3, 1, 3), (2, 2, 1), (1, 1, 2)]
-        mock_input_data = [mock_crates, mock_moves]
+        mock_input_data = mock_crates, mock_moves
         self.solver.load_input = lambda: mock_input_data
 
     def tearDown(self):

@@ -23,11 +23,10 @@ class Day05Solver(DaySolver):
             cmd = line.rstrip().split()
             amount, src, dest = cmd[1], cmd[3], cmd[5]
             moves.append(map(int, (amount, src, dest)))
-        return [crates, moves]
+        return crates, moves
 
     def solve_part_1(self):
-        input_data = deepcopy(self.input_data)
-        crates, moves = input_data[0], input_data[1]
+        crates, moves = deepcopy(self.input_data)
         for move in moves:
             amount, src, dest = move
             while amount > 0:
@@ -36,8 +35,7 @@ class Day05Solver(DaySolver):
         return "".join(crate.pop() for crate in crates)
 
     def solve_part_2(self):
-        input_data = deepcopy(self.input_data)
-        crates, moves = input_data[0], input_data[1]
+        crates, moves = deepcopy(self.input_data)
         for move in moves:
             amount, src, dest = move
             tmp_queue = []
