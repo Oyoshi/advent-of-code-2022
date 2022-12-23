@@ -10,12 +10,22 @@ class Day20Solver(DaySolver):
         return [int(line.rstrip()) for line in file]
 
     def solve_part_1(self):
-        decoded = [(i, n) for i, n in enumerate(self.input_data)]
-        self.decode(self.input_data, decoded)
-        decoded = list(map(lambda e: e[1], decoded))
-        zero_index = decoded.index(0)
-        indices = [(zero_index + i * 1000) % len(decoded) for i in range(1, 4)]
-        vals = [decoded[i] for i in indices]
+        decrypted = [(i, n) for i, n in enumerate(self.input_data)]
+        return self.mix(self.input_data, decrypted, 1)
+
+    def solve_part_2(self):
+        DECRYPTION_KEY = 811589153
+        encrypted = [n * DECRYPTION_KEY for n in self.input_data]
+        decrypted = [(i, n) for i, n in enumerate(encrypted)]
+        return self.mix(encrypted, decrypted, 10)
+
+    def mix(self, encrypted, decrypted, nums):
+        for _ in range(nums):
+            self.decode(encrypted, decrypted)
+        decrypted = list(map(lambda e: e[1], decrypted))
+        zero_index = decrypted.index(0)
+        indices = [(zero_index + i * 1000) % len(decrypted) for i in range(1, 4)]
+        vals = [decrypted[i] for i in indices]
         return sum_iterable(vals)
 
     def decode(self, encrypted, decoded):
@@ -27,7 +37,3 @@ class Day20Solver(DaySolver):
             del decoded[current_position]
             new_position = (current_position + number) % len(decoded)
             decoded.insert(new_position, encrypted_number)
-
-    def solve_part_2(self):
-        pass
-
