@@ -32,7 +32,18 @@ class Day23Solver(DaySolver):
         return self.compute_not_occupied_tiles(coords)
 
     def solve_part_2(self):
-        pass
+        coords, instructions = deepcopy(self.input_data)
+        rounds = 0
+        while True:
+            rounds += 1
+            moves = self.generate_move_proposals(coords, instructions)
+            if len(moves) == 0:
+                break
+            updated_coords = self.execute_moves(coords, moves)
+            coords = updated_coords
+            first = instructions.pop(0)
+            instructions.append(first)
+        return rounds
 
     def generate_move_proposals(self, coords, instructions):
         all_neighbour_coords = [
@@ -48,12 +59,12 @@ class Day23Solver(DaySolver):
         all_potential_moves = {
             c: self.compute_neighbourhood(c, all_neighbour_coords) for c in coords
         }
-        can_move = set(
-            filter(
-                lambda c: len(all_potential_moves[c].intersection(coords)) != 0,
-                all_potential_moves,
-            )
-        )
+        can_move = {
+            c: d
+            for c, d in all_potential_moves.items()
+            if len(d.intersection(coords)) != 0
+        }
+        can_move = set(can_move.keys())
         will_move = {}
         for coord in can_move:
             i = 0
