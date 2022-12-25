@@ -2,8 +2,6 @@ import re
 from enum import Enum
 from days_solvers import DaySolver
 
-from copy import deepcopy
-
 
 class Direction(Enum):
     RIGHT = 0
@@ -37,36 +35,28 @@ class Day22Solver(DaySolver):
         return board, instructions
 
     def solve_part_1(self):
+        return self.simulate_move(self.move_on_plain)
+
+    def solve_part_2(self):
+        pass
+        # return self.simulate_move(self.move_on_cube)
+
+    def simulate_move(self, move_rules_callback):
         board, instructions = self.input_data
-        copied_board = deepcopy(board)
         pos = (0, board[0].index("."))
         direction = Direction.RIGHT
         for instr in instructions:
             if instr.isdigit():
-                pos = self.move(board, direction, pos, int(instr), copied_board)
+                pos = move_rules_callback(board, direction, pos, int(instr))
             else:
                 direction = self.rotate(direction, instr)
-                self.mark_on_board(copied_board, direction, pos)
         return 1000 * (pos[0] + 1) + 4 * (pos[1] + 1) + direction.value
 
-    def mark_on_board(self, board, direction, pos):
-        y, x = pos
-        match direction:
-            case Direction.RIGHT:
-                board[y][x] = ">"
-            case Direction.DOWN:
-                board[y][x] = "v"
-            case Direction.LEFT:
-                board[y][x] = "<"
-            case Direction.UP:
-                board[y][x] = "^"
-
-    def move(self, board, direction, pos, steps, cp_board):
+    def move_on_plain(self, board, direction, pos, steps):
         match direction:
             case Direction.RIGHT:
                 y, x = pos
                 for _ in range(steps):
-                    self.mark_on_board(cp_board, direction, (y, x))
                     if x == len(board[y]) - 1 or board[y][x + 1] == " ":
                         new_x = board[y].index(".")
                         if new_x > 0 and board[y][new_x - 1] == "#":
@@ -80,7 +70,6 @@ class Day22Solver(DaySolver):
             case Direction.LEFT:
                 y, x = pos
                 for _ in range(steps):
-                    self.mark_on_board(cp_board, direction, (y, x))
                     if x == 0 or board[y][x - 1] == " ":
                         new_x = len(board[y]) - 1 - board[y][::-1].index(".")
                         if new_x + 1 < len(board[y]) and board[y][new_x + 1] == "#":
@@ -94,7 +83,6 @@ class Day22Solver(DaySolver):
             case Direction.DOWN:
                 y, x = pos
                 for _ in range(steps):
-                    self.mark_on_board(cp_board, direction, (y, x))
                     if y == len(board) - 1 or board[y + 1][x] == " ":
                         i = 0
                         while i < y:
@@ -112,7 +100,6 @@ class Day22Solver(DaySolver):
             case Direction.UP:
                 y, x = pos
                 for _ in range(steps):
-                    self.mark_on_board(cp_board, direction, (y, x))
                     if y == 0 or board[y - 1][x] == " ":
                         i = len(board) - 1
                         while i >= 0:
@@ -128,12 +115,77 @@ class Day22Solver(DaySolver):
                         y -= 1
                 return (y, x)
 
+    def move_on_cube(self, board, direction, pos, steps):
+        match direction:
+            case Direction.RIGHT:
+                y, x = pos
+                for _ in range(steps):
+                    if x == len(board[y]) - 1 or board[y][x + 1] == " ":
+                        new_x = board[y].index(".")
+                        if new_x > 0 and board[y][new_x - 1] == "#":
+                            return (y, x)
+                        x = new_x
+                    elif board[y][x + 1] == "#":
+                        return (y, x)
+                    else:
+                        x += 1
+                return (y, x)
+            case Direction.LEFT:
+                y, x = pos
+                for _ in range(steps):
+                    if x == 0 or board[y][x - 1] == " ":
+                        new_x = len(board[y]) - 1 - board[y][::-1].index(".")
+                        if new_x + 1 < len(board[y]) and board[y][new_x + 1] == "#":
+                            return (y, x)
+                        x = new_x
+                    elif board[y][x - 1] == "#":
+                        return (y, x)
+                    else:
+                        x -= 1
+                return (y, x)
+            case Direction.DOWN:
+                y, x = pos
+                for _ in range(steps):
+                    if y == len(board) - 1 or board[y + 1][x] == " ":
+                        i = 0
+                        while i < y:
+                            if board[i][x] == ".":
+                                if i > 0 and board[i - 1][x] == "#":
+                                    return (y, x)
+                                y = i
+                                break
+                            i += 1
+                    elif board[y + 1][x] == "#":
+                        return (y, x)
+                    else:
+                        y += 1
+                return (y, x)
+            case Direction.UP:
+                y, x = pos
+                for _ in range(steps):
+                    if y == 0 or board[y - 1][x] == " ":
+                        i = len(board) - 1
+                        while i >= 0:
+                            if board[i][x] == ".":
+                                if i < len(board) - 1 and board[i + 1][x] == "#":
+                                    return (y, x)
+                                y = i
+                                break
+                            i -= 1
+                    elif board[y - 1][x] == "#":
+                        return (y, x)
+                    else:
+                        y -= 1
+                return (y, x)
+
+    def determine_cube_faces(self, board):
+        rows, cols = len(board), len(board[0])
+        if rows > cols:
+            pass
+
     def rotate(self, direction, instr):
         return (
             Direction((direction.value + 1) % 4)
             if instr == "R"
             else Direction((direction.value - 1) % 4)
         )
-
-    def solve_part_2(self):
-        pass

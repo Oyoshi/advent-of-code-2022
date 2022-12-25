@@ -47,6 +47,67 @@ class TreeWalker:
         return node.value
 
 
+class ReversedTreeWalker:
+    def evaluate(self, ast, target):
+        return self.visit(ast, target)
+
+    def visit(self, node, target):
+        if node.token == "int":
+            return self.visit_IntegerNode(node, target)
+        elif node.token == "binop":
+            return self.visit_BinaryOperatorNode(node, target)
+        raise Exception(f"No visitor")
+
+    def visit_BinaryOperatorNode(self, node, target):
+        if node.op == "+":
+            if node.lhs.monkey != "humn":
+                ev = self.visit(node.lhs, target)
+                new_target = target - ev
+                print(ev, new_target)
+                return self.visit(node.rhs, new_target)
+            elif node.rhs.monkey != "humn":
+                ev = self.visit(node.rhs, target)
+                new_target = target - ev
+                print(ev, new_target)
+                return self.visit(node.lhs, new_target)
+        elif node.op == "-":
+            if node.lhs.monkey != "humn":
+                ev = self.visit(node.lhs, target)
+                new_target = ev - target
+                print(ev, new_target)
+                return self.visit(node.rhs, new_target)
+            elif node.rhs.monkey != "humn":
+                ev = self.visit(node.rhs, target)
+                new_target = target + ev
+                print(ev, new_target)
+                return self.visit(node.lhs, new_target)
+        elif node.op == "*":
+            if node.lhs.monkey != "humn":
+                ev = self.visit(node.lhs, target)
+                new_target = target // ev
+                print(ev, new_target)
+                return self.visit(node.rhs, new_target)
+            elif node.rhs.monkey != "humn":
+                ev = self.visit(node.rhs, target)
+                new_target = target // ev
+                print(ev, new_target)
+                return self.visit(node.lhs, new_target)
+        elif node.op == "/":
+            if node.lhs.monkey != "humn":
+                ev = self.visit(node.lhs, target)
+                new_target = ev // target
+                print(ev, new_target)
+                return self.visit(node.rhs, new_target)
+            elif node.rhs.monkey != "humn":
+                ev = self.visit(node.rhs, target)
+                new_target = ev * target
+                print(ev, new_target)
+                return self.visit(node.lhs, new_target)
+
+    def visit_IntegerNode(self, node, target):
+        return node.value
+
+
 class Day21Solver(DaySolver):
     def __init__(self):
         self.day = "21"
@@ -62,7 +123,18 @@ class Day21Solver(DaySolver):
         return tree_walker.evaluate(ast)
 
     def solve_part_2(self):
-        pass
+        ast = self.build_tree("root")
+        is_in_left_subtree = self.find_node(ast.lhs, "humn")
+        tree_walker = TreeWalker()
+        r_tree_walker = ReversedTreeWalker()
+        if is_in_left_subtree:
+            target = tree_walker.evaluate(ast.rhs)
+            res = r_tree_walker.evaluate(ast.lhs, target)
+            # print(res, target)
+            return r_tree_walker.evaluate(ast.lhs, target)
+        else:
+            target = tree_walker.evaluate(ast.lhs)
+            return r_tree_walker.evaluate(ast.rhs, target)
 
     def build_tree(self, monkey):
         instr = self.input_data[monkey]
@@ -72,3 +144,8 @@ class Day21Solver(DaySolver):
         lhs_node = self.build_tree(lhs)
         rhs_node = self.build_tree(rhs)
         return BinaryOperatorNode(monkey, lhs_node, op, rhs_node)
+
+    def find_node(self, node, monkey):
+        if node.token == "int":
+            return node.monkey == monkey
+        return self.find_node(node.lhs, monkey) or self.find_node(node.rhs, monkey)
