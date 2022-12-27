@@ -1,19 +1,6 @@
-from days_solvers import DaySolver
 import re
-
-
-class TreeNode:
-    def __init__(self, cur_dir):
-        self.dir = cur_dir
-        self.files_size = 0
-        self.acc_size = 0
-        self.children = None
-        self.parent = None
-
-    def add_subdir(self, dir_name):
-        subdir = TreeNode(dir_name)
-        subdir.parent = self
-        self.children = self.children + [subdir] if self.children else [subdir]
+from days_solvers import DaySolver
+from .node import Node
 
 
 class Day07Solver(DaySolver):
@@ -38,7 +25,7 @@ class Day07Solver(DaySolver):
         return self.find_min_dir(dir_tree, total_space, min_space - diff)
 
     def create_tree(self):
-        dir_tree = TreeNode("/")
+        dir_tree = Node("/")
         pointer = dir_tree
         for cmd in self.input_data[1:]:
             if "dir" in cmd:

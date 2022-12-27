@@ -22,4 +22,5 @@ from .day_20 import Day20Solver
 from .day_21 import Day21Solver
 from .day_22 import Day22Solver
 from .day_23 import Day23Solver
+from .day_24 import Day24Solver
 from .day_25 import Day25Solver

@@ -1,5 +1,6 @@
 import unittest
-from .day_11_solver import Day11Solver, Monkey
+from .day_11_solver import Day11Solver
+from .monkey import Monkey
 
 
 class Day11SolverTestCase(unittest.TestCase):

@@ -1,23 +1,6 @@
-from copy import deepcopy
+import re
 from days_solvers import DaySolver
-from utils import FifoQueue, mul_iterable
-
-
-class Node:
-    def __init__(self, time, ore, clay, obsidian, geode, robots):
-        self.time = time
-        self.resources = {
-            "ore": ore,
-            "clay": clay,
-            "obsidian": obsidian,
-            "geode": geode,
-        }
-        self.robots = robots
-
-    def __str__(self):
-        return (
-            f"{self.time}: resources: {str(self.resources)}, robots: {str(self.robots)}"
-        )
+from utils import sum_iterable, mul_iterable
 
 
 class Day19Solver(DaySolver):
@@ -25,77 +8,78 @@ class Day19Solver(DaySolver):
         self.day = "19"
 
     def load_input_impl(self, file):
-        splitted_lines = [line.rstrip().split(". ") for line in file]
+        splitted_lines = [line.rstrip() for line in file]
         blueprints = []
-        robot_types = ["ore", "clay", "obsidian", "geode"]
-        for sl in splitted_lines:
-            blueprint = {}
-            for i, r in enumerate(robot_types):
-                blueprint |= self.parse_amount_and_unit(r, sl[i])
-            blueprints.append(blueprint)
+        for line in splitted_lines:
+            vals = tuple(map(int, re.findall(r"\d+", line)))
+            blueprints.append(
+                {
+                    "ore": {"ore": vals[1]},
+                    "clay": {"ore": vals[2]},
+                    "obsidian": {"ore": vals[3], "clay": vals[4]},
+                    "geode": {"ore": vals[5], "obsidian": vals[6]},
+                }
+            )
         return blueprints
 
-    def parse_amount_and_unit(self, robot, cost_descr):
-        splitted = cost_descr.split("costs ")[1].split(" ")
-        costs = (
-            [
-                {"amount": int(splitted[0]), "unit": splitted[1]},
-                {"amount": int(splitted[3]), "unit": splitted[4].rstrip(".")},
-            ]
-            if len(splitted) > 2
-            else [{"amount": int(splitted[0]), "unit": splitted[1]}]
-        )
-        return {robot: costs}
-
     def solve_part_1(self):
-        geo_per_blueprint = {}
-        for b_idx, blueprint in enumerate(self.input_data):
-            geodes = 0
-            root = Node(
-                25, 0, 0, 0, 0, {"ore": 1, "clay": 0, "obsidian": 0, "geode": 0}
-            )
-            Q = FifoQueue([root])
-            while not Q.is_empty() and Q.top().time > 0:
-                state = Q.dequeue()
-                print(str(state), geodes)
-                next_state_wait = self.create_next_state(
-                    state, None, None
-                )  # default wait
-                next_state = None
-                if self.can_build_robot(state, blueprint["geode"]):
-                    next_state = self.create_next_state(state, blueprint, "geode")
-                elif self.can_build_robot(state, blueprint["obsidian"]):
-                    next_state = self.create_next_state(state, blueprint, "obsidian")
-                elif self.can_build_robot(state, blueprint["clay"]):
-                    next_state = self.create_next_state(state, blueprint, "clay")
-                elif self.can_build_robot(state, blueprint["ore"]):
-                    next_state = self.create_next_state(state, blueprint, "ore")
-                if next_state:
-                    Q.enqueue(next_state)
-                Q.enqueue(next_state_wait)
-                geodes = max(geodes, state.resources["geode"])
-            geo_per_blueprint[b_idx] = geodes
-        return mul_iterable(geo_per_blueprint.items())
-
-    def can_build_robot(self, state, cost):
-        return all(
-            [
-                state.resources[partial_cost["unit"]] >= partial_cost["amount"]
-                for partial_cost in cost
-            ]
+        return sum_iterable(
+            (idx + 1) * self.largest_geode_num(bp, 24)
+            for idx, bp in enumerate(self.input_data)
         )
-
-    def create_next_state(self, state, blueprint, robot):
-        next_state = deepcopy(state)
-        if robot:
-            for partial_cost in blueprint[robot]:
-                next_state.resources[partial_cost["unit"]] -= partial_cost["amount"]
-        for rob, num in state.robots.items():
-            next_state.resources[rob] += num
-        if robot:
-            next_state.robots[robot] += 1
-        next_state.time -= 1
-        return next_state
 
     def solve_part_2(self):
-        pass
+        return mul_iterable(
+            self.largest_geode_num(bp, 32) for bp in self.input_data[:3]
+        )
+
+    def largest_geode_num(self, bp, time):
+        init_robots = {r: 1 if r == "ore" else 0 for r in bp}
+        stack = [(0, init_robots, {m: 0 for m in bp}, set())]
+        best_at_time = {}
+        max_robots = self.get_max_robots(bp)
+        while stack:
+            t, robots, resources, skipped_last_iteration = stack.pop(0)
+            best_at_time[t] = max(
+                best_at_time[t] if t in best_at_time else 0, resources["geode"]
+            )
+            if t <= time and best_at_time[t] == resources["geode"]:
+                options = self.get_build_options(bp, resources)
+                for to_build in options:
+                    if not to_build:
+                        resources_ = self.harvest(robots, resources.copy())
+                        stack.append((t + 1, robots, resources_, options))
+                    elif (
+                        to_build in skipped_last_iteration
+                        or robots[to_build] + 1 > max_robots[to_build]
+                    ):
+                        continue
+                    else:
+                        robots_, resources_ = self.build_robot(
+                            bp, robots.copy(), resources.copy(), to_build
+                        )
+                        resources_ = self.harvest(robots, resources_.copy())
+                        stack.insert(0, (t + 1, robots_, resources_, set()))
+        return best_at_time[time]
+
+    def get_max_robots(self, bp):
+        max_robots = {r: 9999999 if r == "geode" else 0 for r in bp}
+        for _, needs in bp.items():
+            for robot, amount in needs.items():
+                max_robots[robot] = max(max_robots[robot], amount)
+        return max_robots
+
+    def get_build_options(self, bp, resources):
+        options = {None}
+        for robot, needs in bp.items():
+            if all(amount <= resources[need] for need, amount in needs.items()):
+                options.add(robot)
+        return {"geode"} if "geode" in options else options
+
+    def build_robot(self, bp, robots, resources, to_build):
+        robots[to_build] += 1
+        resources = resources | {k: resources[k] - v for k, v in bp[to_build].items()}
+        return robots, resources
+
+    def harvest(self, robots, resources):
+        return {k: resources[k] + v for k, v in robots.items()}
