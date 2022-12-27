@@ -2,7 +2,7 @@ import re
 from enum import Enum
 from days_solvers import DaySolver
 
-
+from copy import deepcopy
 class Direction(Enum):
     RIGHT = 0
     DOWN = 1
@@ -35,153 +35,69 @@ class Day22Solver(DaySolver):
         return board, instructions
 
     def solve_part_1(self):
-        return self.simulate_move(self.move_on_plain)
+        return self.simulate_move(self.check_boundary_transition_part_1)
 
     def solve_part_2(self):
-        pass
-        # return self.simulate_move(self.move_on_cube)
+        return self.simulate_move(self.check_boundary_transition_part_2)
 
-    def simulate_move(self, move_rules_callback):
+    def simulate_move(self, boundary_comp_cb):
         board, instructions = self.input_data
+        cp_board = deepcopy(board)
         pos = (0, board[0].index("."))
         direction = Direction.RIGHT
         for instr in instructions:
             if instr.isdigit():
-                pos = move_rules_callback(board, direction, pos, int(instr))
+                direction, pos = self.move(cp_board, board, direction, pos, int(instr), boundary_comp_cb)
             else:
                 direction = self.rotate(direction, instr)
+                cp_board[pos[0]][pos[1]] = self.szpiegulec(direction)
+        for b in cp_board:
+            for bb in b:
+                print(bb, end=' ')
+            print()
         return 1000 * (pos[0] + 1) + 4 * (pos[1] + 1) + direction.value
-
-    def move_on_plain(self, board, direction, pos, steps):
+    
+    def move(self, cp_board, board, direction, pos, steps, boundary_comp_cb):
+        while steps > 0:
+            cp_board[pos[0]][pos[1]] = self.szpiegulec(direction)
+            direction_, pos_ = boundary_comp_cb(direction, pos)
+            if pos_ != pos:
+                y_, x_ = pos_
+                if board[y_][x_] == '#':
+                    return direction, pos
+                direction = direction_
+                pos = pos_
+            else:
+                pos_ = self.step_on_face(direction, pos)
+                y_, x_ = pos_
+                if board[y_][x_] == '#':
+                    return direction, pos
+                pos = pos_
+            steps -= 1
+        return direction, pos
+    
+    def szpiegulec(self, direction):
         match direction:
             case Direction.RIGHT:
-                y, x = pos
-                for _ in range(steps):
-                    if x == len(board[y]) - 1 or board[y][x + 1] == " ":
-                        new_x = board[y].index(".")
-                        if new_x > 0 and board[y][new_x - 1] == "#":
-                            return (y, x)
-                        x = new_x
-                    elif board[y][x + 1] == "#":
-                        return (y, x)
-                    else:
-                        x += 1
-                return (y, x)
+                return '>'
             case Direction.LEFT:
-                y, x = pos
-                for _ in range(steps):
-                    if x == 0 or board[y][x - 1] == " ":
-                        new_x = len(board[y]) - 1 - board[y][::-1].index(".")
-                        if new_x + 1 < len(board[y]) and board[y][new_x + 1] == "#":
-                            return (y, x)
-                        x = new_x
-                    elif board[y][x - 1] == "#":
-                        return (y, x)
-                    else:
-                        x -= 1
-                return (y, x)
-            case Direction.DOWN:
-                y, x = pos
-                for _ in range(steps):
-                    if y == len(board) - 1 or board[y + 1][x] == " ":
-                        i = 0
-                        while i < y:
-                            if board[i][x] == ".":
-                                if i > 0 and board[i - 1][x] == "#":
-                                    return (y, x)
-                                y = i
-                                break
-                            i += 1
-                    elif board[y + 1][x] == "#":
-                        return (y, x)
-                    else:
-                        y += 1
-                return (y, x)
+                return '<'
             case Direction.UP:
-                y, x = pos
-                for _ in range(steps):
-                    if y == 0 or board[y - 1][x] == " ":
-                        i = len(board) - 1
-                        while i >= 0:
-                            if board[i][x] == ".":
-                                if i < len(board) - 1 and board[i + 1][x] == "#":
-                                    return (y, x)
-                                y = i
-                                break
-                            i -= 1
-                    elif board[y - 1][x] == "#":
-                        return (y, x)
-                    else:
-                        y -= 1
-                return (y, x)
+                return '^'
+            case Direction.DOWN:
+                return 'v'
 
-    def move_on_cube(self, board, direction, pos, steps):
+    def step_on_face(self, direction, pos):
+        y, x = pos
         match direction:
             case Direction.RIGHT:
-                y, x = pos
-                for _ in range(steps):
-                    if x == len(board[y]) - 1 or board[y][x + 1] == " ":
-                        new_x = board[y].index(".")
-                        if new_x > 0 and board[y][new_x - 1] == "#":
-                            return (y, x)
-                        x = new_x
-                    elif board[y][x + 1] == "#":
-                        return (y, x)
-                    else:
-                        x += 1
-                return (y, x)
+                return (y, x + 1)
             case Direction.LEFT:
-                y, x = pos
-                for _ in range(steps):
-                    if x == 0 or board[y][x - 1] == " ":
-                        new_x = len(board[y]) - 1 - board[y][::-1].index(".")
-                        if new_x + 1 < len(board[y]) and board[y][new_x + 1] == "#":
-                            return (y, x)
-                        x = new_x
-                    elif board[y][x - 1] == "#":
-                        return (y, x)
-                    else:
-                        x -= 1
-                return (y, x)
-            case Direction.DOWN:
-                y, x = pos
-                for _ in range(steps):
-                    if y == len(board) - 1 or board[y + 1][x] == " ":
-                        i = 0
-                        while i < y:
-                            if board[i][x] == ".":
-                                if i > 0 and board[i - 1][x] == "#":
-                                    return (y, x)
-                                y = i
-                                break
-                            i += 1
-                    elif board[y + 1][x] == "#":
-                        return (y, x)
-                    else:
-                        y += 1
-                return (y, x)
+                return (y, x - 1)
             case Direction.UP:
-                y, x = pos
-                for _ in range(steps):
-                    if y == 0 or board[y - 1][x] == " ":
-                        i = len(board) - 1
-                        while i >= 0:
-                            if board[i][x] == ".":
-                                if i < len(board) - 1 and board[i + 1][x] == "#":
-                                    return (y, x)
-                                y = i
-                                break
-                            i -= 1
-                    elif board[y - 1][x] == "#":
-                        return (y, x)
-                    else:
-                        y -= 1
-                return (y, x)
-
-    def determine_cube_faces(self, board):
-        rows, cols = len(board), len(board[0])
-        if rows > cols:
-            pass
+                return (y - 1, x)
+            case Direction.DOWN:
+                return (y + 1, x)
 
     def rotate(self, direction, instr):
         return (
@@ -189,3 +105,112 @@ class Day22Solver(DaySolver):
             if instr == "R"
             else Direction((direction.value - 1) % 4)
         )
+    
+    # Below two implementations of boundary calculation strategy are based on 
+    # hardcoded shape (net) of my input which is:
+    #
+    #         @@@@@@@@
+    #         @@@@@@@@
+    #         @@@@@@@@
+    #         @@@@@@@@
+    #         @@@@
+    #         @@@@
+    #         @@@@
+    #         @@@@
+    #     @@@@@@@@
+    #     @@@@@@@@
+    #     @@@@@@@@
+    #     @@@@@@@@
+    #     @@@@
+    #     @@@@
+    #     @@@@
+    #     @@@@
+
+    def check_boundary_transition_part_1(self, direction, pos):
+        y, x = pos
+        pos_ = (y, x)
+        if x == 0 and direction == Direction.LEFT:
+            if 100 <= y and y < 150:
+                pos_ = (y, 99)
+            elif 150 <= y and y < 200:
+                pos_ = (y, 49)
+        elif x == 50 and direction == Direction.LEFT:
+            if y < 50:
+                pos_ = (y, 149)
+            elif 50 <= y and y < 100:
+                pos_ = (y, 99)
+        elif x == 49 and 150 <= y and direction == Direction.RIGHT:
+            pos_ =  (y, 0)
+        elif x == 99 and direction == Direction.RIGHT:
+            if 50 <= y and y < 100:
+                pos_ = (y, 50)
+            elif 100 <= y and y < 150:
+                pos_ = (y, 0)
+        elif x == 149 and y < 50 and direction == Direction.RIGHT:
+            pos_ = (y, 50)
+        elif y == 0 and direction == Direction.UP:
+            if 50 <= x and x < 100:
+                pos_ = (149, x)
+            elif 100 <= x and x < 150:
+                pos_ = (49, x)
+        elif y == 49 and 100 <= x and x < 150 and direction ==Direction.DOWN:
+            pos_ = (0, x)
+        elif y == 100 and x < 50 and direction == Direction.UP:
+            pos_ = (199, x)
+        elif y == 149 and 50 <= x and x < 100 and direction == Direction.DOWN:
+            pos_ = (0, x)
+        elif y == 199 and x < 50 and direction == Direction.DOWN:
+            pos_ = (100, x)
+        return direction, pos_
+    
+    def check_boundary_transition_part_2(self, direction, pos):
+        y, x = pos
+        direction_ = direction
+        pos_ = (y, x)
+        if x == 0 and direction == Direction.LEFT:
+            if 100 <= y and y < 150:
+                pos_ = (y % 50, 50)
+                direction_ = Direction.RIGHT
+            elif 150 <= y:
+                pos_ = (0, 50 - y % 50)
+                direction_ = Direction.DOWN
+        elif x == 50 and direction == Direction.LEFT:
+            if y < 50:
+                pos_ = (100 + y % 50, 0)
+                direction_ = Direction.RIGHT
+            elif 50 <= y and y < 100:
+                pos_ = (100, y % 50)
+                direction_ = Direction.DOWN
+        elif x == 49  and 150 <= y and direction == Direction.RIGHT:
+            pos_ =  (149, 50 + y % 50)
+            direction_ = Direction.UP
+        elif x == 99 and direction == Direction.RIGHT:
+            if 50 <= y and y < 100:
+                pos_ = (49, 100 + y % 50)
+                direction_ = Direction.UP
+            elif 100 <= y and y < 150:
+                pos_ = (y % 50, 149)
+                direction_ = Direction.LEFT
+        elif x == 149 and y < 50 and direction == Direction.RIGHT:
+            pos_ = (100 + y % 50, 99)
+            direction_ = Direction.LEFT
+        elif y == 0 and direction == Direction.UP:
+            if 50 <= x and x < 100:
+                pos_ = (199 - x % 50, 0)
+                direction_ = Direction.RIGHT
+            elif 100 <= x and x < 150:
+                pos_ = (199, 50 - y % 50)
+                direction_ = Direction.UP
+        elif y == 49 and 100 <= x and x < 150 and direction ==Direction.DOWN:
+            pos_ = (50 + x % 50, 99)
+            direction_ = Direction.LEFT
+        elif y == 100 and x < 50 and direction == Direction.UP:
+            pos_ = (50 + x % 50, 50)
+            direction_ = Direction.RIGHT
+        elif y == 149 and 50 <= x and x < 100 and direction == Direction.DOWN:
+            pos_ = (150 + x % 50, 49)
+            direction_ = Direction.LEFT
+        elif y == 199 and x < 50 and direction == Direction.DOWN:
+            pos_ = (0, 149 - x % 50)
+            direction_ = Direction.DOWN 
+        return direction_, pos_
