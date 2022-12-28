@@ -2,8 +2,6 @@ import re
 from enum import Enum
 from days_solvers import DaySolver
 
-from copy import deepcopy
-
 
 class Direction(Enum):
     RIGHT = 0
@@ -44,26 +42,19 @@ class Day22Solver(DaySolver):
 
     def simulate_move(self, boundary_comp_cb):
         board, instructions = self.input_data
-        cp_board = deepcopy(board)
         pos = (0, board[0].index("."))
         direction = Direction.RIGHT
         for instr in instructions:
             if instr.isdigit():
                 direction, pos = self.move(
-                    cp_board, board, direction, pos, int(instr), boundary_comp_cb
+                    board, direction, pos, int(instr), boundary_comp_cb
                 )
             else:
                 direction = self.rotate(direction, instr)
-                cp_board[pos[0]][pos[1]] = self.szpiegulec(direction)
-        for b in cp_board:
-            for bb in b:
-                print(bb, end=" ")
-            print()
         return 1000 * (pos[0] + 1) + 4 * (pos[1] + 1) + direction.value
 
-    def move(self, cp_board, board, direction, pos, steps, boundary_comp_cb):
+    def move(self, board, direction, pos, steps, boundary_comp_cb):
         while steps > 0:
-            cp_board[pos[0]][pos[1]] = self.szpiegulec(direction)
             direction_, pos_ = boundary_comp_cb(direction, pos)
             if pos_ != pos:
                 y_, x_ = pos_
@@ -79,17 +70,6 @@ class Day22Solver(DaySolver):
                 pos = pos_
             steps -= 1
         return direction, pos
-
-    def szpiegulec(self, direction):
-        match direction:
-            case Direction.RIGHT:
-                return ">"
-            case Direction.LEFT:
-                return "<"
-            case Direction.UP:
-                return "^"
-            case Direction.DOWN:
-                return "v"
 
     def step_on_face(self, direction, pos):
         y, x = pos
@@ -173,7 +153,7 @@ class Day22Solver(DaySolver):
         pos_ = (y, x)
         if x == 0 and direction == Direction.LEFT:
             if 100 <= y and y < 150:
-                pos_ = (y % 50, 50)
+                pos_ = (50 - y % 50, 50)
                 direction_ = Direction.RIGHT
             elif 150 <= y:
                 pos_ = (0, 50 + y % 50)
