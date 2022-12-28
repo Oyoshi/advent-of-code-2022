@@ -5,7 +5,14 @@ from .day_24_solver import Day24Solver
 class Day24SolverTestCase(unittest.TestCase):
     def setUp(self):
         self.solver = Day24Solver()
-        mock_input_data = ['#.######', '#>>.<^<#', '#.<..<<#', '#>v.><>#', '#<^v^^>#', '######.#']
+        mock_input_data = [
+            "#.######",
+            "#>>.<^<#",
+            "#.<..<<#",
+            "#>v.><>#",
+            "#<^v^^>#",
+            "######.#",
+        ]
         self.solver.load_input = lambda: mock_input_data
 
     def tearDown(self):

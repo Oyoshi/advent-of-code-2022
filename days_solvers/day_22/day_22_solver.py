@@ -3,6 +3,8 @@ from enum import Enum
 from days_solvers import DaySolver
 
 from copy import deepcopy
+
+
 class Direction(Enum):
     RIGHT = 0
     DOWN = 1
@@ -47,45 +49,47 @@ class Day22Solver(DaySolver):
         direction = Direction.RIGHT
         for instr in instructions:
             if instr.isdigit():
-                direction, pos = self.move(cp_board, board, direction, pos, int(instr), boundary_comp_cb)
+                direction, pos = self.move(
+                    cp_board, board, direction, pos, int(instr), boundary_comp_cb
+                )
             else:
                 direction = self.rotate(direction, instr)
                 cp_board[pos[0]][pos[1]] = self.szpiegulec(direction)
         for b in cp_board:
             for bb in b:
-                print(bb, end=' ')
+                print(bb, end=" ")
             print()
         return 1000 * (pos[0] + 1) + 4 * (pos[1] + 1) + direction.value
-    
+
     def move(self, cp_board, board, direction, pos, steps, boundary_comp_cb):
         while steps > 0:
             cp_board[pos[0]][pos[1]] = self.szpiegulec(direction)
             direction_, pos_ = boundary_comp_cb(direction, pos)
             if pos_ != pos:
                 y_, x_ = pos_
-                if board[y_][x_] == '#':
+                if board[y_][x_] == "#":
                     return direction, pos
                 direction = direction_
                 pos = pos_
             else:
                 pos_ = self.step_on_face(direction, pos)
                 y_, x_ = pos_
-                if board[y_][x_] == '#':
+                if board[y_][x_] == "#":
                     return direction, pos
                 pos = pos_
             steps -= 1
         return direction, pos
-    
+
     def szpiegulec(self, direction):
         match direction:
             case Direction.RIGHT:
-                return '>'
+                return ">"
             case Direction.LEFT:
-                return '<'
+                return "<"
             case Direction.UP:
-                return '^'
+                return "^"
             case Direction.DOWN:
-                return 'v'
+                return "v"
 
     def step_on_face(self, direction, pos):
         y, x = pos
@@ -105,8 +109,8 @@ class Day22Solver(DaySolver):
             if instr == "R"
             else Direction((direction.value - 1) % 4)
         )
-    
-    # Below two implementations of boundary calculation strategy are based on 
+
+    # Below two implementations of boundary calculation strategy are based on
     # hardcoded shape (net) of my input which is:
     #
     #         @@@@@@@@
@@ -140,7 +144,7 @@ class Day22Solver(DaySolver):
             elif 50 <= y and y < 100:
                 pos_ = (y, 99)
         elif x == 49 and 150 <= y and direction == Direction.RIGHT:
-            pos_ =  (y, 0)
+            pos_ = (y, 0)
         elif x == 99 and direction == Direction.RIGHT:
             if 50 <= y and y < 100:
                 pos_ = (y, 50)
@@ -153,7 +157,7 @@ class Day22Solver(DaySolver):
                 pos_ = (149, x)
             elif 100 <= x and x < 150:
                 pos_ = (49, x)
-        elif y == 49 and 100 <= x and x < 150 and direction ==Direction.DOWN:
+        elif y == 49 and 100 <= x and x < 150 and direction == Direction.DOWN:
             pos_ = (0, x)
         elif y == 100 and x < 50 and direction == Direction.UP:
             pos_ = (199, x)
@@ -162,7 +166,7 @@ class Day22Solver(DaySolver):
         elif y == 199 and x < 50 and direction == Direction.DOWN:
             pos_ = (100, x)
         return direction, pos_
-    
+
     def check_boundary_transition_part_2(self, direction, pos):
         y, x = pos
         direction_ = direction
@@ -172,7 +176,7 @@ class Day22Solver(DaySolver):
                 pos_ = (y % 50, 50)
                 direction_ = Direction.RIGHT
             elif 150 <= y:
-                pos_ = (0, 50 - y % 50)
+                pos_ = (0, 50 + y % 50)
                 direction_ = Direction.DOWN
         elif x == 50 and direction == Direction.LEFT:
             if y < 50:
@@ -181,8 +185,8 @@ class Day22Solver(DaySolver):
             elif 50 <= y and y < 100:
                 pos_ = (100, y % 50)
                 direction_ = Direction.DOWN
-        elif x == 49  and 150 <= y and direction == Direction.RIGHT:
-            pos_ =  (149, 50 + y % 50)
+        elif x == 49 and 150 <= y and direction == Direction.RIGHT:
+            pos_ = (149, 50 + y % 50)
             direction_ = Direction.UP
         elif x == 99 and direction == Direction.RIGHT:
             if 50 <= y and y < 100:
@@ -196,12 +200,12 @@ class Day22Solver(DaySolver):
             direction_ = Direction.LEFT
         elif y == 0 and direction == Direction.UP:
             if 50 <= x and x < 100:
-                pos_ = (199 - x % 50, 0)
+                pos_ = (150 + x % 50, 0)
                 direction_ = Direction.RIGHT
             elif 100 <= x and x < 150:
-                pos_ = (199, 50 - y % 50)
+                pos_ = (199, x % 50)
                 direction_ = Direction.UP
-        elif y == 49 and 100 <= x and x < 150 and direction ==Direction.DOWN:
+        elif y == 49 and 100 <= x and x < 150 and direction == Direction.DOWN:
             pos_ = (50 + x % 50, 99)
             direction_ = Direction.LEFT
         elif y == 100 and x < 50 and direction == Direction.UP:
@@ -211,6 +215,6 @@ class Day22Solver(DaySolver):
             pos_ = (150 + x % 50, 49)
             direction_ = Direction.LEFT
         elif y == 199 and x < 50 and direction == Direction.DOWN:
-            pos_ = (0, 149 - x % 50)
-            direction_ = Direction.DOWN 
+            pos_ = (0, 100 + x % 50)
+            direction_ = Direction.DOWN
         return direction_, pos_
