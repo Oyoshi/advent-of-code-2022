@@ -4,7 +4,8 @@ My second attempt to AoC. As previously in [Aoc2021](https://github.com/Oyoshi/a
 During this time I spent some time on learning Python concepts and was trying to write code with the spirit of [Tacit Programming](https://en.wikipedia.org/wiki/Tacit_programming) :trollface:.
 ### Map
 
-TODO
+![image](https://user-images.githubusercontent.com/13609568/209939257-2cb302b3-fc5a-4b43-8369-4e572312683b.png)
+
 
 ### Framework
 
@@ -23,7 +24,7 @@ There are also Unit Tests which cover basic scenarios described in the example p
 
 ### Benchmark
 
-Benchmark for `N=10` trials are shown below:
+Benchmarks for `N=10` trials are shown below:
 
 |        | Part 1  &mu; [ms] | Part 1  &sigma; [ms] | Part 2  &mu; [ms] | Part 2  &sigma; [ms] |
 | ------ | ------  | ------ |  ------ |  ------ |
