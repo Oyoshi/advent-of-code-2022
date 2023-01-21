@@ -1,6 +1,6 @@
 ## Solutions for :christmas_tree: [Advent of Code 2022](https://adventofcode.com/2022)
 
-My second attempt to AoC (previously I've not finished all tasks). All solutions are written in [Python](https://www.python.org/) :snake:. 
+My second attempt to AoC (previously in 2021 I've not finished all tasks). All solutions are written in [Python](https://www.python.org/) :snake:. 
 During this time I spent some time on learning Python concepts and was trying to write code with the spirit of [Tacit Programming](https://en.wikipedia.org/wiki/Tacit_programming) :trollface:.
 ### Map
 
